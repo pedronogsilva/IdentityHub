@@ -7,11 +7,12 @@ from core.services import password_service
 
 while True:
     tools.clear_screen()
-    tools.conexao_db()
+    connection, cursor = tools.conexao_db()
+    tools.create_table(connection, cursor)
     option = tools.main_menu()
 
     if option == "1":
-        website_service.menu_view()
+        website_service.website_view()
     elif option == "2":
         manager_service.menu_view()
     elif option == "3":

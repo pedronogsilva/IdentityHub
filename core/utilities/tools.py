@@ -33,13 +33,32 @@ def conexao_db(db_name="identityhub.db"):
     try:
         # Make the connection with database.
         connection = sqlite3.connect(db_path)
-        return connection
+        cursor = connection.cursor()
+        return connection, cursor
     except sqlite3.OperationalError as e:
         print(f"Errot to connection the database '{db_path}': {e}")
         return None
     except Exception as e:
         print(f"Unexpected error to open the database '{db_path}': {e}")
         return None
+
+
+def create_table(connection, cursor):
+    cursor.execute('''CREATE TABLE IF NOT EXISTS website (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        website TEXT UNIQUE COLLATE NOCASE NOT NULL,
+        url TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP)''')
+
+    cursor.execute('''CREATE TABLE IF NOT EXISTS credential (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        website_id INTEGER NOT NULL,
+        username TEXT,
+        email TEXT,
+        password_encrypted TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME,
+        FOREIGN KEY (website_id) REFERENCES website(id))''')
 
 
 def header(title):
@@ -58,6 +77,7 @@ def header(title):
     t_line = f"\033[38;5;99m{title}\033[0m"
     space_t = (line_length - len(t_line)) // 2
     print(" " * space_t + t_line)
+    print()
 
 
 def main_menu():

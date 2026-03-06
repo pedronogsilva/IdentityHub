@@ -10,7 +10,7 @@ This first version focuses on building the foundation of the system, ensuring cl
 
 ## Current Version
 
-**Version:** 0.1 (CLI Foundation)
+**Version:** 0.2.0 (CLI Foundation)
 
 This release includes:
 

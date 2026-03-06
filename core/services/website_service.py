@@ -51,7 +51,7 @@ def website_view():
         if option == "1":
             website_add()
         elif option == "2": 
-            input()
+            website_edit()
         elif option == "3":
             if current_page > 0: 
                 current_page -= 1
@@ -71,7 +71,7 @@ def website_view():
 
 
 def website_add():
-    """Display paginated add website."""
+    """Display paginated and questions add website."""
     connection, cursor = tools.conexao_db()
 
     # Collect site name
@@ -92,6 +92,94 @@ def website_add():
     except sqlite3.IntegrityError:
         connection.rollback()
         input(f"\n   \033[31mError:\033[0m The website '{website_name}' already exist. Press ENTER to retry...")
+
+    # Close database
+    connection.close()
+
+
+def website_edit():
+    """Display paginated and questions edit website."""
+    connection, cursor = tools.conexao_db()
+
+    # User input
+    website_input = input("\n   What´s the website you want to search?\n   \033[90mWrite an option > \033[0m").title()
+
+    # If empty input, exit edit menu
+    if not website_input:
+        input("    Invalid option. Press ENTER to retry...")
+        return None
+    
+    # Search website in database
+    cursor.execute("SELECT id, website, url, created_at FROM website WHERE website = ?", (website_input,))
+    website_edit = cursor.fetchall()
+
+    # If website not found
+    if not website_edit:
+        input("    The website do not exist. Press ENTER to retry...")
+        return None
+
+    while True:
+        # Ask which field the user wants to edit
+        field = choose_field_to_edit()
+        if field is None:
+            return
+
+        if not field:
+            input("    Invalid option. Press ENTER to retry...")
+            return
+
+        # Update selected field
+        update_website(connection, cursor, website_edit[0][0], field)
+        return
+
+
+def choose_field_to_edit():
+    """Ask user which field they want to edit."""
+
+    while True:
+        tools.clear_screen()
+        tools.header('WEBSITES')
+
+        # Edit menu
+        print("   \033[38;5;99m1.\033[0m Edit Website")
+        print("   \033[38;5;99m2.\033[0m Edit URL")
+        print("   \033[38;5;99m3.\033[0m Websites Menu")
+
+        option = input("\n   \033[90mSelect option > \033[0m")
+
+        if option == "1":
+            return "website"
+        elif option == "2":
+            return "url"
+        elif option == "3":
+            return None
+
+
+def update_website(connection, cursor, website_id, field):
+    """Update the selected field in the database."""
+
+    # Ask new value
+    new_value = input("\n   \033[90mWrite the new value > \033[0m")
+
+    # If empty value, cancel update
+    if field == "website":
+        if not new_value:
+            input("    Invalid option. Press ENTER to retry...")
+            return
+        else:
+            new_value = new_value.title()
+    if field == "url":
+        if not new_value:
+            new_value = "No URL provided."
+
+
+    try:
+        # Execute update query
+        cursor.execute(f"UPDATE website SET {field} = ? WHERE id = ?", (new_value, website_id))
+        connection.commit()
+    except sqlite3.IntegrityError:
+        connection.rollback()
+        input(f"\n   \033[31mError:\033[0m The website can´t be editing. Press ENTER to retry...")
 
     # Close database
     connection.close()

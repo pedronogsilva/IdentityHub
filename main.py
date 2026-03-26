@@ -14,7 +14,7 @@ while True:
     if option == "1":
         website_service.website_view()
     elif option == "2":
-        manager_service.menu_view()
+        manager_service.manager_view()
     elif option == "3":
         password_service.menu_view()
     elif option == "4":

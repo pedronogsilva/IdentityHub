@@ -57,7 +57,6 @@ def create_table(connection, cursor):
         email TEXT,
         password_encrypted TEXT NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME,
         FOREIGN KEY (website_id) REFERENCES website(id))''')
 
 

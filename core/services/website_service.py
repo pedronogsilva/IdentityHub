@@ -2,6 +2,7 @@ import os
 import sqlite3
 from core.utilities import tools
 
+
 def website_view():
     """Display paginated list of websites with navigation options."""
     connection, cursor = tools.conexao_db()
@@ -63,7 +64,6 @@ def website_view():
         elif option == "5":
             # Close database
             connection.close()
-
             return
         else: 
             input("    Invalid option. Press ENTER to retry...")

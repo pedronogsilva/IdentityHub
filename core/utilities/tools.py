@@ -1,6 +1,7 @@
 import os
 import sqlite3
 from datetime import datetime
+from cryptography.fernet import Fernet # type: ignore
 from pathlib import Path
 
 
@@ -58,6 +59,30 @@ def create_table(connection, cursor):
         password_encrypted TEXT NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (website_id) REFERENCES website(id))''')
+
+
+def generate_key(KEY_FILE="identityhub.key"):
+    """Generate and save encryption key (only if it doesn't exist)."""
+    key_path = Path("data") / KEY_FILE
+    if not key_path.exists():
+        key = Fernet.generate_key()
+        with open(key_path, "wb") as f:
+            f.write(key)
+    return key_path
+
+def load_key(key_path: Path):
+    """Load encryption key."""
+    return key_path.read_bytes()
+
+def encrypt_password(password: str) -> str:
+    """Encrypt password and return as string."""
+    cipher = Fernet(load_key(key_path = generate_key()))
+    return cipher.encrypt(password.encode()).decode()
+
+def decrypt_password(encrypted_password: str) -> str:
+    """Decrypt password."""
+    cipher = Fernet(load_key(key_path = generate_key()))
+    return cipher.decrypt(encrypted_password.encode()).decode()
 
 
 def header(title):

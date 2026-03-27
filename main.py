@@ -6,9 +6,10 @@ from core.services import manager_service
 from core.services import password_service
 
 while True:
-    tools.clear_screen()
     connection, cursor = tools.conexao_db()
     tools.create_table(connection, cursor)
+    tools.generate_key()
+    tools.clear_screen()
     option = tools.main_menu()
 
     if option == "1":

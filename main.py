@@ -8,7 +8,6 @@ from core.services import password_service
 while True:
     connection, cursor = tools.conexao_db()
     tools.create_table(connection, cursor)
-    tools.generate_key()
     tools.clear_screen()
     option = tools.main_menu()
 

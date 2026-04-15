@@ -1,6 +1,4 @@
-import os
 import sqlite3
-import hashlib
 from core.utilities import tools
 
 
@@ -35,8 +33,7 @@ def manager_view():
 
         #  Print current page records
         for id_, website, username, email, password, created_at in page_records:
-            password_decrypted = tools.decrypt_password(password)
-            print(f"│ {website:<22} │ {username:<25} │ {email:<30} │ {password_decrypted:<25} │ {created_at:^20} │")
+            print(f"│ {website:<22} │ {username:<25} │ {email:<30} │ {password:<25} │ {created_at:^20} │")
             print("─" * line_length)
 
         # User options
@@ -96,13 +93,10 @@ def manager_add():
     if not manager_password:
         input("    Password is required. Press ENTER...")
         return
-    
-    # Fernet password
-    password_encrypted = tools.encrypt_password(manager_password)
 
     # Insert into database
     try:
-        cursor.execute('''INSERT INTO credential (website_id, username, email, password_encrypted) VALUES (?, ?, ?, ?)''', (selected_id, manager_username, manager_email, password_encrypted))
+        cursor.execute('''INSERT INTO credential (website_id, username, email, password_encrypted) VALUES (?, ?, ?, ?)''', (selected_id, manager_username, manager_email, manager_password))
         connection.commit()
     except Exception as e:
         input(f"    Error: {e}")
